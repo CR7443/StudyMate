@@ -11,7 +11,7 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("StudyOrganizer-gui.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 750, 230);
+        Scene scene = new Scene(fxmlLoader.load(), 750, 260);
         stage.setTitle("Study Mate by: Caleb Rogers");
         stage.setScene(scene);
         stage.show();
