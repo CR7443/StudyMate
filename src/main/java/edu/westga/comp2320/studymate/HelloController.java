@@ -26,6 +26,12 @@ public class HelloController {
     private ListView<StudySession> studySessionsListView;
 
     @FXML
+    private void initialize() {
+        this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                this.populateTextFields(newValue));
+    }
+
+    @FXML
     protected void onAddButtonClick() {
         this.clearErrors();
 
@@ -83,5 +89,18 @@ public class HelloController {
     private void clearErrors() {
         this.dayOfWeekErrorLabel.setText("");
         this.subjectErrorLabel.setText("");
+    }
+
+    private void populateTextFields(StudySession session) {
+        if (session == null) {
+            this.dayOfWeekTextField.setText("");
+            this.subjectTextField.setText("");
+            this.taskTextField.setText("");
+            return;
+        }
+
+        this.dayOfWeekTextField.setText(session.getDayOfWeek());
+        this.subjectTextField.setText(session.getSubject());
+        this.taskTextField.setText(session.getTask() == null ? "" : session.getTask());
     }
 }
