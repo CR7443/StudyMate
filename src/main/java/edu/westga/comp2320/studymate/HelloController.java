@@ -1,9 +1,13 @@
 package edu.westga.comp2320.studymate;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
+import java.util.Comparator;
 
 public class HelloController {
 
@@ -29,6 +33,18 @@ public class HelloController {
     private void initialize() {
         this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 this.populateTextFields(newValue));
+
+        this.dayOfWeekTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (newValue == null || newValue.trim().isEmpty() || HelloController.this.isValidDayOfWeek(newValue)) {
+                    HelloController.this.dayOfWeekErrorLabel.setText("");
+                    return;
+                }
+
+                HelloController.this.dayOfWeekErrorLabel.setText("must be M, T, W, R, or F");
+            }
+        });
     }
 
     @FXML
@@ -54,6 +70,7 @@ public class HelloController {
 
         StudySession session = new StudySession(dayOfWeek, subject, this.taskTextField.getText());
         this.studySessionsListView.getItems().add(session);
+        this.sortStudySessions();
         this.studySessionsListView.getSelectionModel().select(session);
     }
 
@@ -102,5 +119,24 @@ public class HelloController {
         this.dayOfWeekTextField.setText(session.getDayOfWeek());
         this.subjectTextField.setText(session.getSubject());
         this.taskTextField.setText(session.getTask() == null ? "" : session.getTask());
+    }
+
+    private void sortStudySessions() {
+        this.studySessionsListView.getItems().sort(
+                Comparator.comparingInt((StudySession session) -> this.getDaySortOrder(session.getDayOfWeek()))
+                        .thenComparing(StudySession::getSubject, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(StudySession::getSubject)
+        );
+    }
+
+    private int getDaySortOrder(String dayOfWeek) {
+        return switch (dayOfWeek) {
+            case "M" -> 1;
+            case "T" -> 2;
+            case "W" -> 3;
+            case "R" -> 4;
+            case "F" -> 5;
+            default -> Integer.MAX_VALUE;
+        };
     }
 }
