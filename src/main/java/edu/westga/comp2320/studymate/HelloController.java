@@ -1,18 +1,18 @@
 package edu.westga.comp2320.studymate;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 
 import java.util.Comparator;
 
 public class HelloController {
 
     @FXML
-    private TextField dayOfWeekTextField;
+    private ToggleGroup dayOfWeekToggleGroup;
 
     @FXML
     private Label dayOfWeekErrorLabel;
@@ -34,15 +34,9 @@ public class HelloController {
         this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 this.populateTextFields(newValue));
 
-        this.dayOfWeekTextField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue == null || newValue.trim().isEmpty() || HelloController.this.isValidDayOfWeek(newValue)) {
-                    HelloController.this.dayOfWeekErrorLabel.setText("");
-                    return;
-                }
-
-                HelloController.this.dayOfWeekErrorLabel.setText("must be M, T, W, R, or F");
+        this.dayOfWeekToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                this.dayOfWeekErrorLabel.setText("");
             }
         });
     }
@@ -52,9 +46,9 @@ public class HelloController {
         this.clearErrors();
 
         boolean hasError = false;
-        String dayOfWeek = this.dayOfWeekTextField.getText();
-        if (!this.isValidDayOfWeek(dayOfWeek)) {
-            this.dayOfWeekErrorLabel.setText("must be M, T, W, R, or F");
+        String dayOfWeek = this.getSelectedDayCode();
+        if (dayOfWeek == null) {
+            this.dayOfWeekErrorLabel.setText("must select M, T, W, R, or F");
             hasError = true;
         }
 
@@ -90,19 +84,6 @@ public class HelloController {
         this.studySessionsListView.getSelectionModel().select(indexToSelect);
     }
 
-    private boolean isValidDayOfWeek(String dayOfWeek) {
-        if (dayOfWeek == null) {
-            return false;
-        }
-
-        String normalizedDay = dayOfWeek.trim().toUpperCase();
-        return normalizedDay.equals("M")
-                || normalizedDay.equals("T")
-                || normalizedDay.equals("W")
-                || normalizedDay.equals("R")
-                || normalizedDay.equals("F");
-    }
-
     private void clearErrors() {
         this.dayOfWeekErrorLabel.setText("");
         this.subjectErrorLabel.setText("");
@@ -110,15 +91,35 @@ public class HelloController {
 
     private void populateTextFields(StudySession session) {
         if (session == null) {
-            this.dayOfWeekTextField.setText("");
+            this.dayOfWeekToggleGroup.selectToggle(null);
             this.subjectTextField.setText("");
             this.taskTextField.setText("");
             return;
         }
 
-        this.dayOfWeekTextField.setText(session.getDayOfWeek());
+        this.selectDayOfWeekToggle(session.getDayOfWeek());
         this.subjectTextField.setText(session.getSubject());
         this.taskTextField.setText(session.getTask() == null ? "" : session.getTask());
+    }
+
+    private String getSelectedDayCode() {
+        Toggle selectedToggle = this.dayOfWeekToggleGroup.getSelectedToggle();
+        if (selectedToggle == null || selectedToggle.getUserData() == null) {
+            return null;
+        }
+
+        return selectedToggle.getUserData().toString();
+    }
+
+    private void selectDayOfWeekToggle(String dayOfWeek) {
+        for (Toggle toggle : this.dayOfWeekToggleGroup.getToggles()) {
+            if (dayOfWeek.equals(toggle.getUserData())) {
+                this.dayOfWeekToggleGroup.selectToggle(toggle);
+                return;
+            }
+        }
+
+        this.dayOfWeekToggleGroup.selectToggle(null);
     }
 
     private void sortStudySessions() {

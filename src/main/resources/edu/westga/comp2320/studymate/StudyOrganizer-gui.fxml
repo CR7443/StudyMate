@@ -3,7 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -11,6 +13,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.westga.comp2320.studymate.HelloController">
+   <fx:define>
+      <ToggleGroup fx:id="dayOfWeekToggleGroup" />
+   </fx:define>
    <children>
       <GridPane layoutX="14.0" layoutY="14.0" prefHeight="232.0" prefWidth="360.0">
         <columnConstraints>
@@ -28,7 +33,6 @@
         </rowConstraints>
          <children>
             <Label text="Day of Week:" />
-            <TextField fx:id="dayOfWeekTextField" GridPane.columnIndex="1" />
             <Label fx:id="dayOfWeekErrorLabel" textFill="RED" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label text="Subject:" GridPane.rowIndex="2" />
             <TextField fx:id="subjectTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -39,6 +43,15 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#onAddButtonClick" prefHeight="25.0" prefWidth="90.0" text="Add" textAlignment="CENTER" />
                   <Button mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="25.0" prefWidth="90.0" text="Delete" textAlignment="CENTER" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="15.0" prefWidth="241.0" GridPane.columnIndex="1">
+               <children>
+                  <RadioButton mnemonicParsing="false" prefHeight="18.0" prefWidth="50.0" text="M" toggleGroup="$dayOfWeekToggleGroup" userData="M" />
+                  <RadioButton mnemonicParsing="false" prefHeight="18.0" prefWidth="50.0" text="T" toggleGroup="$dayOfWeekToggleGroup" userData="T" />
+                  <RadioButton mnemonicParsing="false" prefHeight="18.0" prefWidth="50.0" text="W" toggleGroup="$dayOfWeekToggleGroup" userData="W" />
+                  <RadioButton mnemonicParsing="false" prefHeight="18.0" prefWidth="50.0" text="R" toggleGroup="$dayOfWeekToggleGroup" userData="R" />
+                  <RadioButton mnemonicParsing="false" prefHeight="18.0" prefWidth="50.0" text="F" toggleGroup="$dayOfWeekToggleGroup" userData="F" />
                </children>
             </HBox>
          </children>
