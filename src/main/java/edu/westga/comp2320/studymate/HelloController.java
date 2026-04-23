@@ -1,24 +1,51 @@
 package edu.westga.comp2320.studymate;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class HelloController {
 
+    private final ToggleGroup dayOfWeekToggleGroup = new ToggleGroup();
+
     @FXML
-    private ToggleGroup dayOfWeekToggleGroup;
+    private RadioButton mondayRadioButton;
+
+    @FXML
+    private RadioButton tuesdayRadioButton;
+
+    @FXML
+    private RadioButton wednesdayRadioButton;
+
+    @FXML
+    private RadioButton thursdayRadioButton;
+
+    @FXML
+    private RadioButton fridayRadioButton;
 
     @FXML
     private Label dayOfWeekErrorLabel;
 
     @FXML
-    private TextField subjectTextField;
+    private CheckBox englCheckBox;
+
+    @FXML
+    private CheckBox histCheckBox;
+
+    @FXML
+    private CheckBox mathCheckBox;
+
+    @FXML
+    private CheckBox compCheckBox;
 
     @FXML
     private Label subjectErrorLabel;
@@ -31,6 +58,9 @@ public class HelloController {
 
     @FXML
     private void initialize() {
+        this.configureDayOfWeekRadioButtons();
+        this.configureSubjectCheckBoxes();
+
         this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 this.populateTextFields(newValue));
 
@@ -39,6 +69,32 @@ public class HelloController {
                 this.dayOfWeekErrorLabel.setText("");
             }
         });
+    }
+
+    private void configureDayOfWeekRadioButtons() {
+        this.configureDayRadioButton(this.mondayRadioButton, "M");
+        this.configureDayRadioButton(this.tuesdayRadioButton, "T");
+        this.configureDayRadioButton(this.wednesdayRadioButton, "W");
+        this.configureDayRadioButton(this.thursdayRadioButton, "R");
+        this.configureDayRadioButton(this.fridayRadioButton, "F");
+    }
+
+    private void configureDayRadioButton(RadioButton radioButton, String dayCode) {
+        radioButton.setToggleGroup(this.dayOfWeekToggleGroup);
+        radioButton.setUserData(dayCode);
+    }
+
+    private void configureSubjectCheckBoxes() {
+        this.englCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
+        this.histCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
+        this.mathCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
+        this.compCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
+    }
+
+    private void clearSubjectErrorIfValid() {
+        if (!this.getSelectedSubjects().isEmpty()) {
+            this.subjectErrorLabel.setText("");
+        }
     }
 
     @FXML
@@ -52,9 +108,9 @@ public class HelloController {
             hasError = true;
         }
 
-        String subject = this.subjectTextField.getText();
-        if (subject == null || subject.trim().isEmpty()) {
-            this.subjectErrorLabel.setText("required");
+        List<String> subjects = this.getSelectedSubjects();
+        if (subjects.isEmpty()) {
+            this.subjectErrorLabel.setText("select at least one subject");
             hasError = true;
         }
 
@@ -62,7 +118,8 @@ public class HelloController {
             return;
         }
 
-        StudySession session = new StudySession(dayOfWeek, subject, this.taskTextField.getText());
+        String subjectText = String.join(", ", subjects);
+        StudySession session = new StudySession(dayOfWeek, subjectText, this.taskTextField.getText());
         this.studySessionsListView.getItems().add(session);
         this.sortStudySessions();
         this.studySessionsListView.getSelectionModel().select(session);
@@ -92,14 +149,60 @@ public class HelloController {
     private void populateTextFields(StudySession session) {
         if (session == null) {
             this.dayOfWeekToggleGroup.selectToggle(null);
-            this.subjectTextField.setText("");
+            this.clearSubjectSelections();
             this.taskTextField.setText("");
             return;
         }
 
         this.selectDayOfWeekToggle(session.getDayOfWeek());
-        this.subjectTextField.setText(session.getSubject());
+        this.selectSubjectsFromText(session.getSubject());
         this.taskTextField.setText(session.getTask() == null ? "" : session.getTask());
+    }
+
+    private List<String> getSelectedSubjects() {
+        List<String> selectedSubjects = new ArrayList<>();
+
+        if (this.englCheckBox.isSelected()) {
+            selectedSubjects.add("ENGL");
+        }
+        if (this.histCheckBox.isSelected()) {
+            selectedSubjects.add("HIST");
+        }
+        if (this.mathCheckBox.isSelected()) {
+            selectedSubjects.add("MATH");
+        }
+        if (this.compCheckBox.isSelected()) {
+            selectedSubjects.add("COMP");
+        }
+
+        return selectedSubjects;
+    }
+
+    private void clearSubjectSelections() {
+        this.englCheckBox.setSelected(false);
+        this.histCheckBox.setSelected(false);
+        this.mathCheckBox.setSelected(false);
+        this.compCheckBox.setSelected(false);
+    }
+
+    private void selectSubjectsFromText(String subjectText) {
+        this.clearSubjectSelections();
+        if (subjectText == null || subjectText.isBlank()) {
+            return;
+        }
+
+        String[] subjects = subjectText.split(",");
+        for (String subject : subjects) {
+            String normalized = subject.trim().toUpperCase();
+            switch (normalized) {
+                case "ENGL" -> this.englCheckBox.setSelected(true);
+                case "HIST" -> this.histCheckBox.setSelected(true);
+                case "MATH" -> this.mathCheckBox.setSelected(true);
+                case "COMP" -> this.compCheckBox.setSelected(true);
+                default -> {
+                }
+            }
+        }
     }
 
     private String getSelectedDayCode() {
