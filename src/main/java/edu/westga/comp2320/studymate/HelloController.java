@@ -3,6 +3,7 @@ package edu.westga.comp2320.studymate;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -66,6 +67,7 @@ public class HelloController {
     private void initialize() {
         this.configureDayOfWeekRadioButtons();
         this.configureSubjectCheckBoxes();
+        this.configureStudySessionListViewDisplay();
 
         this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 this.populateTextFields(newValue));
@@ -95,6 +97,74 @@ public class HelloController {
         this.histCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
         this.mathCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
         this.compCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> this.clearSubjectErrorIfValid());
+    }
+
+    private void configureStudySessionListViewDisplay() {
+        this.studySessionsListView.setCellFactory((listView) -> new ListCell<>() {
+            @Override
+            protected void updateItem(StudySession session, boolean empty) {
+                super.updateItem(session, empty);
+                if (empty || session == null) {
+                    this.setText(null);
+                    return;
+                }
+
+                this.setText(HelloController.this.getListViewDisplayText(session, this.getIndex()));
+            }
+        });
+    }
+
+    private String getListViewDisplayText(StudySession session, int index) {
+        StringBuilder text = new StringBuilder();
+        if (this.isFirstSessionForDay(index, session.getDayOfWeek())) {
+            if (index > 0) {
+                text.append("\n");
+            }
+            text.append(this.getDayName(session.getDayOfWeek())).append("\n");
+        }
+
+        text.append(this.getSubjectTaskDisplayText(session));
+        return text.toString();
+    }
+
+    private boolean isFirstSessionForDay(int index, String dayCode) {
+        if (index <= 0) {
+            return true;
+        }
+
+        if (index >= this.studySessionsListView.getItems().size()) {
+            return false;
+        }
+
+        StudySession previousSession = this.studySessionsListView.getItems().get(index - 1);
+        return !dayCode.equals(previousSession.getDayOfWeek());
+    }
+
+    private String getSubjectTaskDisplayText(StudySession session) {
+        String taskSuffix = "";
+        if (session.getTask() != null && !session.getTask().isBlank()) {
+            taskSuffix = " – " + session.getTask();
+        }
+
+        String[] subjects = session.getSubject().split(",");
+        StringBuilder subjectLines = new StringBuilder();
+        for (String subject : subjects) {
+            String trimmedSubject = subject.trim();
+            if (trimmedSubject.isEmpty()) {
+                continue;
+            }
+
+            if (subjectLines.length() > 0) {
+                subjectLines.append("\n");
+            }
+            subjectLines.append(trimmedSubject).append(taskSuffix);
+        }
+
+        if (subjectLines.length() == 0) {
+            return session.getSubject() + taskSuffix;
+        }
+
+        return subjectLines.toString();
     }
 
     private void clearSubjectErrorIfValid() {
@@ -128,6 +198,7 @@ public class HelloController {
         StudySession session = new StudySession(dayOfWeek, subjectText, this.taskTextField.getText());
         this.studySessionsListView.getItems().add(session);
         this.sortStudySessions();
+        this.studySessionsListView.refresh();
         this.studySessionsListView.getSelectionModel().select(session);
     }
 
@@ -140,10 +211,12 @@ public class HelloController {
 
         this.studySessionsListView.getItems().remove(selectedIndex);
         if (this.studySessionsListView.getItems().isEmpty()) {
+            this.studySessionsListView.refresh();
             return;
         }
 
         int indexToSelect = Math.min(selectedIndex, this.studySessionsListView.getItems().size() - 1);
+        this.studySessionsListView.refresh();
         this.studySessionsListView.getSelectionModel().select(indexToSelect);
     }
 
@@ -194,6 +267,17 @@ public class HelloController {
         return escaped;
     }
 
+    private String getDayName(String dayCode) {
+        return switch (dayCode) {
+            case "M" -> "Monday";
+            case "T" -> "Tuesday";
+            case "W" -> "Wednesday";
+            case "R" -> "Thursday";
+            case "F" -> "Friday";
+            default -> dayCode;
+        };
+    }
+
     private void clearErrors() {
         this.dayOfWeekErrorLabel.setText("");
         this.subjectErrorLabel.setText("");
@@ -228,6 +312,7 @@ public class HelloController {
             selectedSubjects.add("COMP");
         }
 
+        selectedSubjects.sort(String.CASE_INSENSITIVE_ORDER);
         return selectedSubjects;
     }
 
