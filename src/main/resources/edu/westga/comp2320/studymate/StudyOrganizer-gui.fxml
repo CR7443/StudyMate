@@ -20,9 +20,9 @@
    <children>
       <MenuBar prefWidth="685.0">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="true" text="_File">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onSaveMenuItemClick" text="Save Ctrl+S" />
+              <MenuItem accelerator="Ctrl+S" mnemonicParsing="false" onAction="#onSaveMenuItemClick" text="Save Ctrl+S" />
             </items>
           </Menu>
         </menus>
