@@ -8,7 +8,13 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -139,6 +145,53 @@ public class HelloController {
 
         int indexToSelect = Math.min(selectedIndex, this.studySessionsListView.getItems().size() - 1);
         this.studySessionsListView.getSelectionModel().select(indexToSelect);
+    }
+
+    @FXML
+    protected void onSaveMenuItemClick() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Study Sessions");
+        fileChooser.setInitialFileName("study-sessions.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+        Window window = this.studySessionsListView.getScene() == null ? null : this.studySessionsListView.getScene().getWindow();
+        File selectedFile = fileChooser.showSaveDialog(window);
+        if (selectedFile == null) {
+            return;
+        }
+
+        this.saveSessionsToFile(selectedFile);
+    }
+
+    private void saveSessionsToFile(File file) {
+        List<String> lines = new ArrayList<>();
+        lines.add("dayOfWeek,subject,task");
+
+        for (StudySession session : this.studySessionsListView.getItems()) {
+            String csvLine = this.toCsvValue(session.getDayOfWeek())
+                    + "," + this.toCsvValue(session.getSubject())
+                    + "," + this.toCsvValue(session.getTask());
+            lines.add(csvLine);
+        }
+
+        try {
+            Files.write(file.toPath(), lines, StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            this.subjectErrorLabel.setText("save failed");
+        }
+    }
+
+    private String toCsvValue(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        String escaped = value.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") || escaped.contains("\r")) {
+            return "\"" + escaped + "\"";
+        }
+
+        return escaped;
     }
 
     private void clearErrors() {

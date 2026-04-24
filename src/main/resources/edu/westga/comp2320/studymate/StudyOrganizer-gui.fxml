@@ -4,6 +4,9 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,9 +16,18 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.westga.comp2320.studymate.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="290.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.westga.comp2320.studymate.HelloController">
    <children>
-      <GridPane layoutX="14.0" layoutY="14.0" prefHeight="232.0" prefWidth="298.0">
+      <MenuBar prefWidth="685.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onSaveMenuItemClick" text="Save Ctrl+S" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <GridPane layoutX="14.0" layoutY="42.0" prefHeight="232.0" prefWidth="298.0">
         <columnConstraints>
           <ColumnConstraints minWidth="10.0" prefWidth="119.0" />
           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="241.0" />
@@ -69,6 +81,6 @@
             </VBox>
          </children>
       </GridPane>
-      <ListView fx:id="studySessionsListView" layoutX="330.0" layoutY="14.0" prefHeight="232.0" prefWidth="340.0" />
+      <ListView fx:id="studySessionsListView" layoutX="330.0" layoutY="42.0" prefHeight="232.0" prefWidth="340.0" />
    </children>
 </AnchorPane>
