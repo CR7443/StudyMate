@@ -50,8 +50,8 @@
             <TextField fx:id="taskTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <HBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onAddButtonClick" prefHeight="25.0" prefWidth="90.0" text="Add" textAlignment="CENTER" />
-                  <Button mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="25.0" prefWidth="90.0" text="Delete" textAlignment="CENTER" />
+                  <Button fx:id="addButton" mnemonicParsing="false" onAction="#onAddButtonClick" prefHeight="25.0" prefWidth="90.0" text="Add" textAlignment="CENTER" />
+                  <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#onDeleteButtonClick" prefHeight="25.0" prefWidth="90.0" text="Delete" textAlignment="CENTER" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="40.0" prefWidth="298.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">

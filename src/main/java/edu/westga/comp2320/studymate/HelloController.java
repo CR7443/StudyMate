@@ -1,6 +1,7 @@
 package edu.westga.comp2320.studymate;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
@@ -9,6 +10,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -61,6 +64,12 @@ public class HelloController {
     private TextField taskTextField;
 
     @FXML
+    private Button addButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
     private ListView<StudySession> studySessionsListView;
 
     @FXML
@@ -68,6 +77,7 @@ public class HelloController {
         this.configureDayOfWeekRadioButtons();
         this.configureSubjectCheckBoxes();
         this.configureStudySessionListViewDisplay();
+        this.configureTabOrder();
 
         this.studySessionsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 this.populateTextFields(newValue));
@@ -77,6 +87,42 @@ public class HelloController {
                 this.dayOfWeekErrorLabel.setText("");
             }
         });
+    }
+
+    private void configureTabOrder() {
+        List<javafx.scene.control.Control> tabOrder = List.of(
+                this.mondayRadioButton,
+                this.tuesdayRadioButton,
+                this.wednesdayRadioButton,
+                this.thursdayRadioButton,
+                this.fridayRadioButton,
+                this.englCheckBox,
+                this.histCheckBox,
+                this.mathCheckBox,
+                this.compCheckBox,
+                this.taskTextField,
+                this.addButton,
+                this.deleteButton,
+                this.studySessionsListView
+        );
+
+        for (int index = 0; index < tabOrder.size(); index++) {
+            javafx.scene.control.Control currentControl = tabOrder.get(index);
+            int currentIndex = index;
+            currentControl.addEventFilter(KeyEvent.KEY_PRESSED, (event) ->
+                    this.handleTabTraversal(event, tabOrder, currentIndex));
+        }
+    }
+
+    private void handleTabTraversal(KeyEvent event, List<javafx.scene.control.Control> tabOrder, int currentIndex) {
+        if (event.getCode() != KeyCode.TAB || event.isAltDown() || event.isControlDown() || event.isMetaDown()) {
+            return;
+        }
+
+        int direction = event.isShiftDown() ? -1 : 1;
+        int nextIndex = (currentIndex + direction + tabOrder.size()) % tabOrder.size();
+        tabOrder.get(nextIndex).requestFocus();
+        event.consume();
     }
 
     private void configureDayOfWeekRadioButtons() {
