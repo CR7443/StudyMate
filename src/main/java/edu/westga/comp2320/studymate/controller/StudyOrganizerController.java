@@ -1,5 +1,6 @@
-package edu.westga.comp2320.studymate;
+package edu.westga.comp2320.studymate.controller;
 
+import edu.westga.comp2320.studymate.model.StudySession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class HelloController {
+public class StudyOrganizerController {
 
     private final ToggleGroup dayOfWeekToggleGroup = new ToggleGroup();
 
@@ -155,7 +156,7 @@ public class HelloController {
                     return;
                 }
 
-                this.setText(HelloController.this.getListViewDisplayText(session, this.getIndex()));
+                this.setText(StudyOrganizerController.this.getListViewDisplayText(session, this.getIndex()));
             }
         });
     }
@@ -246,6 +247,9 @@ public class HelloController {
         this.sortStudySessions();
         this.studySessionsListView.refresh();
         this.studySessionsListView.getSelectionModel().select(session);
+        this.dayOfWeekToggleGroup.selectToggle(null);
+        this.clearSubjectSelections();
+        this.taskTextField.clear();
     }
 
     @FXML

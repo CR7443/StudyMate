@@ -1,5 +1,6 @@
 package edu.westga.comp2320.studymate;
 
+import edu.westga.comp2320.studymate.model.StudySession;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
